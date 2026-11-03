@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 @app.get("/")
 def serverName():
-    return socket.gethostname()
+    return "v2: " + socket.gethostname()
 
 @app.get("/load")
 def increaseLoad():
