@@ -18,4 +18,6 @@ jobs:
         with:
           context: ./app
           push: true
-          tags: junyong0416/flask-app:latest
+          tags: |
+                junyong0416/flask-app:latest
+                junyong0416/flask-app:${{ github.sha }}
