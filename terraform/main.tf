@@ -3,6 +3,11 @@ provider "aws" {
     region = "ap-northeast-2"
     }
 
+variable "image_tag" {
+  type    = string
+  default = "latest"
+}
+
 # 최신 AMI 이미지를 조회
 data "aws_ami" "al2023" {
   most_recent = true
@@ -45,7 +50,7 @@ resource "aws_launch_template" "app"{
         #!/bin/bash
         dnf install -y docker
         systemctl enable --now docker
-        docker run -d --restart always -p 5000:5000 junyong0416/flask-app
+        docker run -d --restart always -p 5000:5000 junyong0416/flask-app:${var.image_tag}
     EOF
     )
 }
@@ -127,6 +132,13 @@ resource "aws_autoscaling_group" "app" {
   target_group_arns = [aws_lb_target_group.app.arn]
   health_check_type = "ELB"
   health_check_grace_period = 300
+
+  instance_refresh {
+  strategy = "Rolling"
+  preferences {
+    min_healthy_percentage = 50
+  }
+}
 }
 
 resource "aws_autoscaling_policy" "cpu" {
