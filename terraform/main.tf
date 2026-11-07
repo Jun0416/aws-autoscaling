@@ -1,3 +1,12 @@
+terraform {
+  backend "s3" {
+    bucket       = "junyong-tfstate-0416-890988596463-ap-northeast-2-an"
+    key          = "aws-autoscaling/terraform.tfstate"
+    region       = "ap-northeast-2"
+    use_lockfile = true
+  }
+}
+
 # 리전은 서울
 provider "aws" {
     region = "ap-northeast-2"
@@ -125,7 +134,7 @@ resource "aws_autoscaling_group" "app" {
 
   launch_template {
     id = aws_launch_template.app.id 
-    version = "$Latest"
+    version = aws_launch_template.app.latest_version
   }
   
   vpc_zone_identifier = data.aws_subnets.default.ids

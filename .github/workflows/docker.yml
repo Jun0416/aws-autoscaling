@@ -21,3 +21,22 @@ jobs:
           tags: |
                 junyong0416/flask-app:latest
                 junyong0416/flask-app:${{ github.sha }}
+
+
+  deploy:
+    needs: build            # job 1 이름과 같아야 해요
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::890988596463:role/github-actions-terraform-role
+          aws-region: ap-northeast-2
+      - uses: hashicorp/setup-terraform@v3
+      - run: terraform init
+        working-directory: terraform
+      - run: terraform apply -auto-approve -var="image_tag=${{ github.sha }}"
+        working-directory: terraform
